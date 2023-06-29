@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strconv"
 	"strings"
 
 	"github.com/awalterschulze/gographviz"
@@ -17,14 +18,17 @@ import (
 
 // Graph represents a graph of k8s resources
 type Graph struct {
-	dir  string
-	res  *resources.Resources
-	gviz *gographviz.Graph
+	dir        string
+	res        *resources.Resources
+	gviz       *gographviz.Graph
+	size       int
+	horizontal bool
+	fontSize   int
 }
 
 // NewGraph returns a Graph of k8s resources
-func NewGraph(res *resources.Resources, dir string) *Graph {
-	g := &Graph{res: res, dir: dir, gviz: gographviz.NewGraph()}
+func NewGraph(res *resources.Resources, dir string, size int, horizontal bool, fontSize int) *Graph {
+	g := &Graph{res: res, dir: dir, gviz: gographviz.NewGraph(), size: size, horizontal: horizontal, fontSize: fontSize}
 	g.generate()
 
 	return g
@@ -129,9 +133,19 @@ func (g *Graph) generateCommon() {
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to set to graph name to G: %v\n", err)
 	}
-	err = g.gviz.AddAttr("G", "rankdir", "TD")
+	var rankDirValue string
+	if g.horizontal {
+		rankDirValue = "LR"
+	} else {
+		rankDirValue = "TD"
+	}
+	err = g.gviz.AddAttr("G", "rankdir", rankDirValue)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to set rankdir to TD: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Failed to set rankdir to %s: %v\n", rankDirValue, err)
+	}
+	err = g.gviz.AddAttr("G", "fontsize", strconv.Itoa(g.fontSize))
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to set fontsize to %s: %v\n", strconv.Itoa(g.fontSize), err)
 	}
 	err = g.gviz.AddSubGraph("G", g.clusterName(),
 		map[string]string{"label": g.clusterLabel(), "labeljust": "l", "style": "dotted"})
@@ -199,7 +213,7 @@ func (g *Graph) generateNodes() {
 		for _, resType := range strings.Fields(rankRes) {
 			for _, name := range g.res.GetResourceNames(resType) {
 				err := g.gviz.AddNode(g.rankName(r), g.resourceName(resType, name),
-					map[string]string{"label": g.resourceLabel(resType, name), "penwidth": "0"})
+					map[string]string{"label": g.resourceLabel(resType, name), "penwidth": "0", "fontsize": strconv.Itoa(g.fontSize * 4 / 5)})
 				if err != nil {
 					fmt.Fprintf(os.Stderr, "Failed to add node %s to subgraph %s: %v\n", g.resourceName(resType, name), g.rankName(r), err)
 				}

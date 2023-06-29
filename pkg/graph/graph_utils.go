@@ -6,6 +6,7 @@ package graph
 import (
 	"fmt"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
@@ -13,19 +14,21 @@ import (
 // path is {dir}/icons/{resource}-128.png
 // ex) /icons/pod-128.png
 func (g *Graph) imagePath(kind string) string {
-	return filepath.Join(g.dir, "icons", kind+imageSuffix)
+	return filepath.Join(g.dir, "icons", kind+"-"+strconv.Itoa(g.size)+imageExtension)
 }
 
 // clusterLabel returns the resource label for namespace
 // ex)
-//   <<TABLE BORDER="0"><TR><TD><IMG SRC="/icons/ns-128.png" /></TD></TR><TR><TD>my-namespace</TD></TR></TABLE>>
+//
+//	<<TABLE BORDER="0"><TR><TD><IMG SRC="/icons/ns-128.png" /></TD></TR><TR><TD>my-namespace</TD></TR></TABLE>>
 func (g *Graph) clusterLabel() string {
 	return g.resourceLabel("ns", g.res.Namespace)
 }
 
 // resourceLabel returns the resource label for a resource
 // ex)
-//   <<TABLE BORDER="0"><TR><TD><IMG SRC="/icons/pod-128.png" /></TD></TR><TR><TD>my-pod</TD></TR></TABLE>>
+//
+//	<<TABLE BORDER="0"><TR><TD><IMG SRC="/icons/pod-128.png" /></TD></TR><TR><TD>my-pod</TD></TR></TABLE>>
 func (g *Graph) resourceLabel(kind, name string) string {
 	return fmt.Sprintf("<<TABLE BORDER=\"0\"><TR><TD><IMG SRC=\"%s\" /></TD></TR><TR><TD>%s</TD></TR></TABLE>>", g.imagePath(kind), name)
 }

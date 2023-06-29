@@ -133,7 +133,7 @@ func prepTestGraph(t *testing.T, objs ...runtime.Object) *Graph {
 		t.Fatalf("NewResources failed: %v", err)
 	}
 
-	return NewGraph(res, dir)
+	return NewGraph(res, dir, 128, false, 50)
 }
 
 func getGoldenFilePath(name string) string {

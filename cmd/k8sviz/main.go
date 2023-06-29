@@ -28,15 +28,19 @@ const (
 	descOutFileOpt     = "output filename"
 	descOutTypeOpt     = "type of output"
 	descShortOptSuffix = " (shorthand)"
+	descSizeOpt        = "icon size (128/256)"
 )
 
 var (
 	clientset *kubernetes.Clientset
 	dir       string
 	// Flags
-	namespace string
-	outFile   string
-	outType   string
+	namespace  string
+	outFile    string
+	outType    string
+	size       int
+	horizontal bool
+	fontSize   int
 )
 
 func init() {
@@ -55,6 +59,9 @@ func init() {
 	flag.StringVar(&outFile, "o", defaultOutFile, descOutFileOpt+descShortOptSuffix)
 	flag.StringVar(&outType, "type", defaultOutType, descOutTypeOpt)
 	flag.StringVar(&outType, "t", defaultOutType, descOutTypeOpt+descShortOptSuffix)
+	flag.IntVar(&size, "size", 128, "icon size (128/256)")
+	flag.BoolVar(&horizontal, "horizontal", false, "Use an horizontal layout instead of vertical")
+	flag.IntVar(&fontSize, "fontsize", 50, "label font size")
 	flag.Parse()
 
 	// use the current context in kubeconfig
@@ -97,7 +104,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	g := graph.NewGraph(res, dir)
+	g := graph.NewGraph(res, dir, size, horizontal, fontSize)
 
 	if outType == "dot" {
 		if err := g.WriteDotFile(outFile); err != nil {

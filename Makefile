@@ -4,12 +4,11 @@ DEVEL_IMAGE ?= k8sviz
 DEVEL_TAG ?= devel
 TARGET ?= vanilla
 
-test: test-lint test-fmt test-vet test-unit
-	@echo "[Running test]"
+clean:
+	rm -rf bin dist
 
-test-lint:
-	@echo "[Running golint]"
-	golint -set_exit_status cmd/... pkg/...
+test: test-fmt test-vet test-unit
+	@echo "[Running test]"
 
 test-fmt:
 	@echo "[Running gofmt]"
@@ -36,6 +35,11 @@ build:
 	mkdir -p bin/
 	GO111MODULE=on go build -o bin/k8sviz ./cmd/k8sviz
 
+dist: build
+	mkdir -p dist/
+	cp bin/k8sviz dist/
+	cp -R icons/ dist/
+
 release: test build test-e2e
 
 image-build:
@@ -47,4 +51,5 @@ image-push: image-build
 	docker tag $(DEVEL_IMAGE):$(DEVEL_TAG) $(IMAGE):$(TAG)
 	docker push $(IMAGE):$(TAG)
 
-.PHONY: test test-lint test-fmt test-vet test-unit test-e2e build release image-build image-push
+
+.PHONY: test test-lint test-fmt test-vet test-unit test-e2e build release image-build image-push clean

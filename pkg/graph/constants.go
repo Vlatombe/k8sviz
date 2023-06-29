@@ -4,7 +4,7 @@
 package graph
 
 const (
-	clusterPrefix = "cluster_"
-	rankPrefix    = "rank_"
-	imageSuffix   = "-128.png"
+	clusterPrefix  = "cluster_"
+	rankPrefix     = "rank_"
+	imageExtension = ".png"
 )

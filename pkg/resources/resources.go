@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	appsv1 "k8s.io/api/apps/v1"
-	autov1 "k8s.io/api/autoscaling/v1"
+	autov2 "k8s.io/api/autoscaling/v2"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	netv1 "k8s.io/api/networking/v1"
@@ -51,7 +51,7 @@ type Resources struct {
 	Jobs      *batchv1.JobList
 	CronJobs  *batchv1.CronJobList
 	Ingresses *netv1.IngressList
-	Hpas      *autov1.HorizontalPodAutoscalerList
+	Hpas      *autov2.HorizontalPodAutoscalerList
 }
 
 // NewResources resturns Resources for the namespace
@@ -130,7 +130,7 @@ func NewResources(clientset kubernetes.Interface, namespace string) (*Resources,
 	}
 
 	// hpas
-	res.Hpas, err = clientset.AutoscalingV1().HorizontalPodAutoscalers(namespace).List(context.TODO(), metav1.ListOptions{})
+	res.Hpas, err = clientset.AutoscalingV2().HorizontalPodAutoscalers(namespace).List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		return nil, fmt.Errorf("failed to get hpas in namespace %q: %v", namespace, err)
 	}

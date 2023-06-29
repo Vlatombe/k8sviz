@@ -12,7 +12,7 @@ import (
 	"github.com/andreyvit/diff"
 	"github.com/mkimuram/k8sviz/pkg/resources"
 	appsv1 "k8s.io/api/apps/v1"
-	autov1 "k8s.io/api/autoscaling/v1"
+	autov2 "k8s.io/api/autoscaling/v2"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	netv1 "k8s.io/api/networking/v1"
@@ -48,8 +48,8 @@ var (
 			OwnerReferences: []metav1.OwnerReference{{APIVersion: "apps/v1", Kind: "Deployment", Name: "deploy1"}}}},
 		&appsv1.Deployment{ObjectMeta: metav1.ObjectMeta{Namespace: testns, Name: "deploy1",
 			Labels: map[string]string{"app": "rs1"}}},
-		&autov1.HorizontalPodAutoscaler{ObjectMeta: metav1.ObjectMeta{Namespace: testns, Name: "hpa1"},
-			Spec: autov1.HorizontalPodAutoscalerSpec{ScaleTargetRef: autov1.CrossVersionObjectReference{Kind: "Deployment", Name: "deploy1", APIVersion: "apps/v1"}}},
+		&autov2.HorizontalPodAutoscaler{ObjectMeta: metav1.ObjectMeta{Namespace: testns, Name: "hpa1"},
+			Spec: autov2.HorizontalPodAutoscalerSpec{ScaleTargetRef: autov2.CrossVersionObjectReference{Kind: "Deployment", Name: "deploy1", APIVersion: "apps/v1"}}},
 		&netv1.Ingress{ObjectMeta: metav1.ObjectMeta{Namespace: testns, Name: "ing1"},
 			Spec: netv1.IngressSpec{Rules: []netv1.IngressRule{
 				{IngressRuleValue: netv1.IngressRuleValue{
